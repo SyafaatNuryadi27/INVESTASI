@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvestPro | Platform Pengelolaan Capital & Portofolio Resmi</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS Styling -->
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e1;
+            --border-light: #e2e8f0;
+            
+            --primary-900: #0f172a;
+            --primary-800: #1e293b;
+            --primary-700: #334155;
+            
+            --accent-blue: #1d4ed8;
+            --accent-blue-hover: #1e40af;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            
+            --success: #15803d;
+            --success-bg: #f0fdf4;
+            --danger: #b91c1c;
+            --danger-bg: #fef2f2;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dashboard-wrapper {
+            max-width: 1040px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Top Header Navbar (Typography-First, No Logo) */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-text h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary-900);
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-badge.online .status-dot {
+            background: var(--success);
+        }
+
+        /* Layout Grid Utama */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 16px;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Portfolio Summary Card */
+        .hero-card {
+            background: var(--primary-900);
+            color: #ffffff;
+            border: 1px solid var(--primary-800);
+        }
+
+        .hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .hero-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+        }
+
+        .balance-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+            color: #ffffff;
+            word-break: break-all;
+        }
+
+        .hero-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        .profit-badge {
+            background: rgba(21, 128, 61, 0.25);
+            color: #4ade80;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        /* Metrics Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 14px 0;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            word-break: break-all;
+        }
+
+        /* Operations Panel (Deposit / Withdrawal Tabs) */
+        .operations-tab-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            background: #e2e8f0;
+            padding: 3px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 8px 4px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            border-radius: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            transition: all 0.15s ease;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--primary-900);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-prefix {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px 10px 38px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
+        }
+
+        .quick-amounts {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .chip-btn {
+            background: #f1f5f9;
+            border: 1px solid var(--border-light);
+            padding: 6px 4px;
+            border-radius: 3px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .chip-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 11px;
+            background: var(--primary-900);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            transition: background 0.15s;
+        }
+
+        .btn-submit.btn-withdraw {
+            background: var(--danger);
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .system-status {
+            margin-top: 10px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Right Column: Chart & Logs */
+        .chart-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .chart-card-header h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 10px 0;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .logs-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .logs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+        }
+
+        .log-item.deposit {
+            border-left: 3px solid var(--success);
+        }
+
+        .log-item.withdraw {
+            border-left: 3px solid var(--danger);
+        }
+
+        .log-type {
+            font-weight: 700;
+            color: var(--primary-900);
+            display: block;
+        }
+
+        .log-amount {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .log-time {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+        }
+
+        /* Optimasi Responsif Mobile (HP) */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .navbar {
+                padding: 12px 14px;
+                flex-direction: row;
+            }
+
+            .brand-text h1 {
+                font-size: 0.95rem;
+            }
+
+            .brand-text p {
+                font-size: 0.7rem;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .balance-value {
+                font-size: 1.5rem;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+
+            .stats-grid {
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 10px;
+            }
+
+            .stat-value {
+                font-size: 0.82rem;
+            }
+
+            .quick-amounts {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        
+        <!-- Header Navbar -->
+        <header class="navbar">
+            <div class="brand-text">
+                <h1>InvestPro Institutional</h1>
+                <p>Platform Resmi Manajemen Modal & Asset Yield</p>
+            </div>
+            <div class="status-badge" id="connectionBadge">
+                <span class="status-dot"></span>
+                <span id="connectionText">Sistem Offline</span>
+            </div>
+        </header>
+
+        <!-- Layout Grid Utama -->
+        <div class="main-grid">
+            
+            <!-- Kolom Kiri: Ringkasan Portfolio & Terminal Transaksi -->
+            <section style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Ringkasan Saldo Utama -->
+                <div class="card hero-card">
+                    <div class="hero-header">
+                        <span class="hero-title">Total Capital Managed</span>
+                        <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">IDR ACCOUNT</span>
+                    </div>
+                    <div class="balance-value" id="currentBalance">Rp 0,00</div>
+                    <div class="hero-footer">
+                        <span class="profit-badge" id="totalProfitPercentage">+0.0000%</span>
+                        <span style="color: #94a3b8; font-size: 0.72rem;">Yield Akumulasi Real-Time</span>
+                    </div>
+                </div>
+
+                <!-- Indikator Kinerja -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Bunga Harian</div>
+                        <div class="stat-value" id="dailyRate">1.0% / Hari</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Est. Profit Harian</div>
+                        <div class="stat-value" id="dailyProfit">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Gains</div>
+                        <div class="stat-value" style="color: var(--success);" id="totalProfitRp">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Uptime Sesi</div>
+                        <div class="stat-value" id="timeElapsed">00:00:00</div>
+                    </div>
+                </div>
+
+                <!-- Terminal Transaksi (Deposit & Withdraw) -->
+                <div class="card">
+                    <div class="operations-tab-header">
+                        <button class="tab-btn active" id="tabDepositBtn" onclick="switchTab('deposit')">Deposit (Top Up)</button>
+                        <button class="tab-btn" id="tabWithdrawBtn" onclick="switchTab('withdraw')">Penarikan (Withdraw)</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transactionAmount" id="inputLabel">Nominal Deposit</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">Rp</span>
+                            <input type="text" id="transactionAmount" placeholder="0" inputmode="numeric" />
+                        </div>
+                    </div>
+
+                    <div class="quick-amounts">
+                        <button class="chip-btn" onclick="addQuickAmount(1000000)">+1 Jt</button>
+                        <button class="chip-btn" onclick="addQuickAmount(5000000)">+5 Jt</button>
+                        <button class="chip-btn" onclick="addQuickAmount(10000000)">+10 Jt</button>
+                    </div>
+
+                    <button class="btn-submit" id="executeBtn">Proses Transaksi Deposit</button>
+
+                    <div class="system-status" id="statusMessage">
+                        Memuat data status jaringan...
+                    </div>
+                </div>
+            </section>
+
+            <!-- Kolom Kanan: Chart & Audit Log -->
+            <section class="card">
+                <div class="chart-card-header">
+                    <h2>Proyeksi Pertumbuhan Capital</h2>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">STREAMING ENGINE</span>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+
+                <div class="logs-header">
+                    <div class="logs-title">Riwayat Transaksi & Audit Log</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">GDM SYNC</span>
+                </div>
+
+                <div class="logs-list" id="logsContainer">
+                    <div class="log-item">
+                        <div>
+                            <span class="log-type">Sistem Status</span>
+                            <span class="log-amount">Memuat riwayat transaksi...</span>
+                        </div>
+                        <span class="log-time">-</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modular Version 10+ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // ==========================================
+        // 1. KONFIGURASI FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.net",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Parameter Global
+        const DAILY_RATE = 0.01; // Bunga 1% per hari
+        const USER_ID = "user_demo_123";
+        let initialDeposit = 0;
+        let startTime = Date.now();
+        let timerInterval = null;
+        let activeTab = 'deposit'; // 'deposit' or 'withdraw'
+        let transactionLogs = [];
+        let latestCalculatedBalance = 0;
+
+        // Element DOM
+        const balanceEl = document.getElementById("currentBalance");
+        const dailyProfitEl = document.getElementById("dailyProfit");
+        const totalProfitRpEl = document.getElementById("totalProfitRp");
+        const totalProfitPctEl = document.getElementById("totalProfitPercentage");
+        const timeElapsedEl = document.getElementById("timeElapsed");
+        const statusEl = document.getElementById("statusMessage");
+        const executeBtn = document.getElementById("executeBtn");
+        const inputAmount = document.getElementById("transactionAmount");
+        const logsContainer = document.getElementById("logsContainer");
+        const connBadge = document.getElementById("connectionBadge");
+        const connText = document.getElementById("connectionText");
+
+        // Formatters
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function formatTimer(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Auto-Format Ribuan pada Input
+        inputAmount.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value) {
+                e.target.value = new Intl.NumberFormat('id-ID').format(value);
+            } else {
+                e.target.value = '';
+            }
+        });
+
+        function getRawInputValue() {
+            return parseFloat(inputAmount.value.replace(/\./g, '')) || 0;
+        }
+
+        // Quick Amount Additions
+        window.addQuickAmount = function(val) {
+            const current = getRawInputValue();
+            const updated = current + val;
+            inputAmount.value = new Intl.NumberFormat('id-ID').format(updated);
+        };
+
+        // Switch Tab Manager
+        window.switchTab = function(type) {
+            activeTab = type;
+            const depBtn = document.getElementById("tabDepositBtn");
+            const wdBtn = document.getElementById("tabWithdrawBtn");
+            const label = document.getElementById("inputLabel");
+
+            if (type === 'deposit') {
+                depBtn.classList.add("active");
+                wdBtn.classList.remove("active");
+                label.innerText = "Nominal Deposit (Top Up)";
+                executeBtn.innerText = "Proses Transaksi Deposit";
+                executeBtn.classList.remove("btn-withdraw");
+            } else {
+                wdBtn.classList.add("active");
+                depBtn.classList.remove("active");
+                label.innerText = "Nominal Penarikan (Withdraw)";
+                executeBtn.innerText = "Proses Penarikan Dana";
+                executeBtn.classList.add("btn-withdraw");
+            }
+        };
+
+        // Inisialisasi Chart.js
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        const growthChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Capital',
+                    data: [],
+                    borderColor: '#0f172a',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: {
+                            color: '#64748b',
+                            font: { size: 10 },
+                            callback: function(val) {
+                                return 'Rp ' + (val / 1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Loop Kalkulasi Pertumbuhan Realtime
+        function startGrowthEngine() {
+            if (timerInterval) clearInterval(timerInterval);
+            const secondRate = DAILY_RATE / 86400;
+
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                const elapsedSeconds = Math.floor((now - startTime) / 1000);
+
+                latestCalculatedBalance = initialDeposit * Math.pow((1 + secondRate), elapsedSeconds);
+                const profitRp = latestCalculatedBalance - initialDeposit;
+                const profitPct = initialDeposit > 0 ? ((profitRp / initialDeposit) * 100) : 0;
+
+                // Update Tampilan Dashboard
+                balanceEl.innerText = formatRupiah(latestCalculatedBalance);
+                totalProfitRpEl.innerText = formatRupiah(profitRp);
+                totalProfitPctEl.innerText = `+${profitPct.toFixed(4)}%`;
+                timeElapsedEl.innerText = formatTimer(elapsedSeconds);
+
+                // Update Data Chart Realtime
+                const timeStr = new Date().toLocaleTimeString();
+                if (growthChart.data.labels.length > 20) {
+                    growthChart.data.labels.shift();
+                    growthChart.data.datasets[0].data.shift();
+                }
+                growthChart.data.labels.push(timeStr);
+                growthChart.data.datasets[0].data.push(latestCalculatedBalance.toFixed(2));
+                growthChart.update('none');
+            }, 1000);
+        }
+
+        // Render Riwayat Transaksi (Audit Log)
+        function renderLogs(logs) {
+            if (!logs || logs.length === 0) {
+                logsContainer.innerHTML = `
+                    <div class="log-item">
+                        <span>Belum ada rekaman transaksi.</span>
+                        <span class="log-time">-</span>
+                    </div>`;
+                return;
+            }
+
+            logsContainer.innerHTML = logs.slice().reverse().map(log => {
+                const isDeposit = log.type === 'Deposit';
+                return `
+                    <div class="log-item ${isDeposit ? 'deposit' : 'withdraw'}">
+                        <div>
+                            <span class="log-type">${log.type}</span>
+                            <span class="log-amount">${isDeposit ? '+' : '-'}${formatRupiah(log.amount)}</span>
+                        </div>
+                        <span class="log-time">${new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // 2. BACA DATA FIREBASE (READ REALTIME)
+        // ==========================================
+        const userRef = ref(database, 'users/' + USER_ID);
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            
+            connBadge.className = "status-badge online";
+            connText.innerText = "Sistem Online";
+
+            if (data) {
+                initialDeposit = data.initialDeposit || 0;
+                startTime = data.startTime || Date.now();
+                transactionLogs = data.logs || [];
+
+                dailyProfitEl.innerText = formatRupiah(initialDeposit * DAILY_RATE);
+                statusEl.innerText = "Terkoneksi dengan server database utama.";
+                statusEl.style.color = "var(--success)";
+
+                renderLogs(transactionLogs);
+                startGrowthEngine();
+            } else {
+                statusEl.innerText = "Data akun tidak ditemukan. Silakan lakukan deposit awal.";
+                statusEl.style.color = "var(--danger)";
+            }
+        }, (error) => {
+            connBadge.className = "status-badge";
+            connText.innerText = "Offline";
+            statusEl.innerText = "Koneksi terputus: " + error.message;
+            statusEl.style.color = "var(--danger)";
+        });
+
+        // ==========================================
+        // 3. EKSEKUSI TRANSAKSI FIREBASE (WRITE DATA)
+        // ==========================================
+        executeBtn.addEventListener('click', () => {
+            const val = getRawInputValue();
+
+            if (isNaN(val) || val <= 0) {
+                alert("Masukkan nominal transaksi yang valid!");
+                return;
+            }
+
+            // Validasi Penarikan
+            if (activeTab === 'withdraw' && val > latestCalculatedBalance) {
+                alert("Penarikan gagal! Nominal melebihi Total Capital yang tersedia.");
+                return;
+            }
+
+            executeBtn.disabled = true;
+            executeBtn.innerText = "Memproses...";
+
+            let newCapital = 0;
+            let transactionType = "";
+
+            if (activeTab === 'deposit') {
+                newCapital = latestCalculatedBalance + val;
+                transactionType = "Deposit";
+            } else {
+                newCapital = latestCalculatedBalance - val;
+                transactionType = "Penarikan";
+            }
+
+            const now = Date.now();
+            const newLog = {
+                type: transactionType,
+                amount: val,
+                timestamp: now
+            };
+
+            const updatedLogs = [...transactionLogs, newLog];
+
+            set(ref(database, 'users/' + USER_ID), {
+                initialDeposit: newCapital,
+                startTime: now, // Reset timer dari transaksi terbaru
+                updatedAt: new Date().toISOString(),
+                logs: updatedLogs
+            }).then(() => {
+                statusEl.innerText = `Transaksi ${transactionType} berhasil dieksekusi!`;
+                statusEl.style.color = "var(--success)";
+                inputAmount.value = '';
+                
+                // Clear grafik chart
+                growthChart.data.labels = [];
+                growthChart.data.datasets[0].data = [];
+            }).catch((error) => {
+                statusEl.innerText = "Gagal memproses transaksi: " + error.message;
+                statusEl.style.color = "var(--danger)";
+            }).finally(() => {
+                executeBtn.disabled = false;
+                switchTab(activeTab); // Reset status tombol
+            });
+        });
+    </script>
+</body>
+</html>
