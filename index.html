@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bengkulu Investasi - Portal Resmi Informasi Investasi Daerah</title>
+    
+    <style>
+        /* ==========================================================================
+           1. VARIABLES & RESET
+           ========================================================================== */
+        :root {
+            --bg-main: #f4f6f8;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            
+            --accent-brand: #059669;
+            --accent-brand-hover: #047857;
+            --accent-brand-bg: #ecfdf5;
+            
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-full: 9999px;
+            --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ==========================================================================
+           2. HEADER & NAVBAR
+           ========================================================================== */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            min-width: 0;
+        }
+
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            background-color: #0f172a;
+            color: #ffffff;
+            font-weight: 800;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            border-left: 3px solid var(--accent-brand);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logo-text span {
+            color: var(--accent-brand);
+            font-weight: 600;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        /* ==========================================================================
+           3. BUTTONS & BADGES
+           ========================================================================== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            letter-spacing: 0.01em;
+            min-height: 40px;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-brand {
+            background-color: var(--accent-brand);
+            color: #ffffff;
+        }
+
+        .btn-brand:hover {
+            background-color: var(--accent-brand-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-input);
+            border-color: var(--border-hover);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background-color: var(--accent-brand-bg);
+            color: var(--accent-brand);
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            margin-bottom: 14px;
+            max-width: 100%;
+            text-align: left;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-brand);
+            border-radius: 50%;
+            flex-shrink: 0;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ==========================================================================
+           4. SECTIONS & CONTAINER
+           ========================================================================== */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .hero-section {
+            padding: 40px 0 32px 0;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .hero-section {
+                padding: 70px 0 50px 0;
+            }
+        }
+
+        .hero-title {
+            font-size: clamp(1.6rem, 7vw, 3.2rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            max-width: 800px;
+            margin: 0 auto 12px auto;
+        }
+
+        .hero-title span {
+            color: var(--accent-brand);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(0.88rem, 3.5vw, 1.15rem);
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto 24px auto;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .hero-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .hero-cta {
+                flex-direction: row;
+                justify-content: center;
+            }
+            .hero-cta .btn {
+                width: auto;
+            }
+        }
+
+        .hero-cta .btn {
+            width: 100%;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin: 30px 0 50px 0;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+                margin: 40px 0 60px 0;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+            background-color: var(--accent-brand-bg);
+            color: var(--accent-brand);
+            font-weight: 800;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            border: 1px solid rgba(5, 150, 105, 0.2);
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ==========================================================================
+           5. FOOTER
+           ========================================================================== */
+        footer {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 24px 16px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: auto;
+            width: 100%;
+        }
+
+        footer p + p { margin-top: 6px; font-size: 0.68rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo-box">
+                <div class="logo-icon">BI</div>
+                <div class="logo-text">InvestasiBengkulu<span>.my.id</span></div>
+            </a>
+            <div id="navActions" class="nav-actions">
+                <!-- Dinamis berdasarkan status autentikasi Firebase -->
+                <a href="login.html" class="btn btn-outline">Masuk</a>
+                <a href="daftar.html" class="btn btn-brand">Daftar</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="status-badge">
+                <span class="status-dot"></span> Portal Terintegrasi Investasi Bengkulu 2026
+            </div>
+            <h1 class="hero-title">Platform Layanan Informasi <span>Provinsi Bengkulu</span></h1>
+            <p class="hero-subtitle">
+                Akses resmi informasi peluang investasi daerah, proyek komoditas unggulan, dan pemantauan portofolio yang terpercaya secara transparan.
+            </p>
+            <div id="heroCta" class="hero-cta">
+                <a href="login.html" class="btn btn-outline">Masuk Akun</a>
+                <a href="daftar.html" class="btn btn-brand">Daftar Akun Baru</a>
+            </div>
+        </section>
+
+        <!-- Fitur Utama -->
+        <section class="features-grid">
+            <div class="card">
+                <div class="feature-icon">🏛️</div>
+                <h3 class="card-title">Kemitraan Daerah</h3>
+                <p class="card-desc">Terhubung langsung dengan sektor usaha unggulan seperti komoditas perkebunan, perikanan, dan UMKM potensial Bengkulu.</p>
+            </div>
+            <div class="card">
+                <div class="feature-icon">📊</div>
+                <h3 class="card-title">Transparansi Data</h3>
+                <p class="card-desc">Laporan analisis dan pemantauan proyek disajikan secara terperinci sesuai ketentuan akuntansi yang berlaku.</p>
+            </div>
+            <div class="card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="card-title">Aman & Terpantau</h3>
+                <p class="card-desc">Sistem manajemen portofolio digital dilengkapi proteksi keamanan data dan audit berkala demi kenyamanan pemodal.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 bengkuluinvestasi.my.id &bull; Portal Resmi Informasi Investasi Daerah Bengkulu</p>
+        <p>Layanan Informasi Terpadu Proyek Daerah Bagi Masyarakat Provinsi Bengkulu.</p>
+    </footer>
+
+    <!-- Script Integrasi Firebase & Dinamis Auth State -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlgpm04sI7Jweytg2IzTHgp8w-VM1SMKw",
+            authDomain: "investasi-bengkulu.firebaseapp.com",
+            projectId: "investasi-bengkulu",
+            storageBucket: "investasi-bengkulu.firebasestorage.app",
+            messagingSenderId: "273258663588",
+            appId: "1:273258663588:web:a4c96b4d438a4462fca031"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Pantau Status Autentikasi Pengguna
+        onAuthStateChanged(auth, (user) => {
+            const navActions = document.getElementById('navActions');
+            const heroCta = document.getElementById('heroCta');
+
+            if (user) {
+                // Jika pengguna sudah login
+                if (navActions) {
+                    navActions.innerHTML = `
+                        <a href="investasi.html" class="btn btn-brand">Portal Investor</a>
+                        <button id="logoutBtn" class="btn btn-outline" style="border-color: #ef4444; color: #ef4444;">Keluar</button>
+                    `;
+                    document.getElementById('logoutBtn').addEventListener('click', async () => {
+                        try {
+                            await signOut(auth);
+                            alert('Berhasil keluar akun.');
+                            window.location.reload();
+                        } catch (error) {
+                            console.error('Gagal keluar:', error);
+                        }
+                    });
+                }
+                if (heroCta) {
+                    heroCta.innerHTML = `
+                        <a href="investasi.html" class="btn btn-brand">Buka Portal Investor</a>
+                    `;
+                }
+            } else {
+                // Jika pengguna belum login
+                if (navActions) {
+                    navActions.innerHTML = `
+                        <a href="login.html" class="btn btn-outline">Masuk</a>
+                        <a href="daftar.html" class="btn btn-brand">Daftar</a>
+                    `;
+                }
+                if (heroCta) {
+                    heroCta.innerHTML = `
+                        <a href="login.html" class="btn btn-outline">Masuk Akun</a>
+                        <a href="daftar.html" class="btn btn-brand">Daftar Akun Baru</a>
+                    `;
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
