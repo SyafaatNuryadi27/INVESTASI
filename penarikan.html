@@ -185,6 +185,19 @@
             margin-bottom: 4px;
         }
 
+        .alert-box {
+            background-color: var(--accent-red-bg);
+            border: 1px solid #fecaca;
+            color: var(--accent-red);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+            display: none;
+        }
+
         .btn-group {
             display: flex;
             flex-direction: column;
@@ -259,6 +272,10 @@
             <p class="nominal-title">Total Nominal Penarikan</p>
             <div id="display-nominal-wd" class="nominal-val">Rp 0</div>
 
+            <div id="alert-referral" class="alert-box">
+                Akses penarikan saldo Anda saat ini terkunci. Silakan selesaikan syarat undang teman terlebih dahulu!
+            </div>
+
             <form id="form-penarikan-detail">
                 <div class="form-group">
                     <label for="bank-tujuan">Bank / E-Wallet Tujuan</label>
@@ -289,14 +306,15 @@
                 <div class="instructions">
                     <h4>Ketentuan Penarikan:</h4>
                     <ul>
+                        <li>Wajib memenuhi syarat status undang teman yang dibuka oleh admin untuk membuka kunci penarikan.</li>
                         <li>Pastikan data rekening / e-wallet sudah benar.</li>
                         <li>Proses verifikasi dan pencairan dana memerlukan waktu 1-3 hari kerja.</li>
-                        <li>Biaya admin gratis untuk penarikan pertama dalam minggu ini.</li>
                     </ul>
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn btn-red">Ajukan Penarikan</button>
+                    <button type="submit" id="btn-submit" class="btn btn-red">Ajukan Penarikan</button>
+                    <a href="undang.html" id="btn-undang" class="btn btn-red" style="display: none; background-color: var(--accent-brand);">Undang Teman Sekarang</a>
                     <a href="investasi.html" class="btn btn-outline">Batal / Kembali</a>
                 </div>
             </form>
@@ -310,6 +328,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDlgpm04sI7Jweytg2IzTHgp8w-VM1SMKw",
@@ -322,16 +341,45 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         let currentUser = null;
         let nominalPenarikan = 0;
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.href = 'login.html';
                 return;
             }
             currentUser = user;
+            
+            // Periksa statusUndangTeman dari Firestore dokumen portfolios pengguna
+            const alertBox = document.getElementById('alert-referral');
+            const submitBtn = document.getElementById('btn-submit');
+            const undangBtn = document.getElementById('btn-undang');
+            const formInputs = document.querySelectorAll('.form-input');
+
+            try {
+                const portfolioDocRef = doc(db, "portfolios", user.uid);
+                const portfolioSnap = await getDoc(portfolioDocRef);
+                
+                let statusUndangTeman = 'belum';
+                if (portfolioSnap.exists()) {
+                    statusUndangTeman = portfolioSnap.data().statusUndangTeman || 'belum';
+                }
+
+                if (statusUndangTeman !== 'sudah') {
+                    alertBox.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                    undangBtn.style.display = 'inline-block';
+                    
+                    formInputs.forEach(input => {
+                        input.disabled = true;
+                    });
+                }
+            } catch (error) {
+                console.error("Gagal memeriksa status undang teman:", error);
+            }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -349,12 +397,28 @@
             document.getElementById('display-nominal-wd').textContent = formatRupiah(nominalPenarikan);
 
             const formWdDetail = document.getElementById('form-penarikan-detail');
-            formWdDetail.addEventListener('submit', (e) => {
+            formWdDetail.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentUser) {
                     alert('Silakan masuk terlebih dahulu.');
                     window.location.href = 'login.html';
                     return;
+                }
+
+                try {
+                    const portfolioDocRef = doc(db, "portfolios", currentUser.uid);
+                    const portfolioSnap = await getDoc(portfolioDocRef);
+                    let statusUndangTeman = 'belum';
+                    if (portfolioSnap.exists()) {
+                        statusUndangTeman = portfolioSnap.data().statusUndangTeman || 'belum';
+                    }
+
+                    if (statusUndangTeman !== 'sudah') {
+                        alert('Akses penarikan belum dibuka oleh admin!');
+                        return;
+                    }
+                } catch (err) {
+                    console.error(err);
                 }
 
                 if (nominalPenarikan <= 0) {
@@ -365,7 +429,7 @@
                 const bankTujuan = document.getElementById('bank-tujuan').value;
                 const noRekening = document.getElementById('no-rekening').value.trim();
                 const namaPemilik = document.getElementById('nama-pemilik').value.trim();
-                const submitBtn = formWdDetail.querySelector('button[type="submit"]');
+                const submitBtn = document.getElementById('btn-submit');
 
                 if (!bankTujuan || !noRekening || !namaPemilik) {
                     alert('Harap lengkapi semua data penarikan.');
@@ -373,9 +437,27 @@
                 }
 
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Mengarahkan ke WhatsApp...';
+                submitBtn.textContent = 'Menyimpan & Mengarahkan ke WhatsApp...';
 
-                // Ganti nomor WhatsApp admin di bawah ini (gunakan format internasional tanpa tanda +, contoh: 6281234567890)
+                const waktuSekarang = new Date().toLocaleString('id-ID', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+
+                try {
+                    await addDoc(collection(db, "transactions"), {
+                        userId: currentUser.uid,
+                        tipe: 'Penarikan',
+                        jumlah: nominalPenarikan,
+                        bank: `${bankTujuan} - ${noRekening} (${namaPemilik})`,
+                        waktu: waktuSekarang,
+                        status: 'Pending',
+                        createdAt: new Date().toISOString()
+                    });
+                } catch (error) {
+                    console.error("Gagal menyimpan transaksi ke Firestore:", error);
+                }
+
                 const adminWhatsAppNumber = "6281234567890"; 
 
                 const pesan = `Halo Admin, saya ingin mengajukan penarikan saldo:\n\n` +
@@ -390,7 +472,6 @@
                 const encodedMessage = encodeURIComponent(pesan);
                 const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodedMessage}`;
 
-                // Langsung arahkan ke halaman WhatsApp dengan pesan terisi otomatis
                 window.location.href = whatsappUrl;
             });
         });
