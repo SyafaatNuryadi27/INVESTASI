@@ -409,7 +409,7 @@
             <div id="display-nominal-transfer" class="nominal-val">Rp 0</div>
 
             <div class="qris-wrapper">
-                <img src="QR.jpeg" alt="Kode QRIS Pembayaran" class="qris-img" id="qris-image">
+                <img src="qris.png" alt="Kode QRIS Pembayaran" class="qris-img" id="qris-image">
             </div>
 
             <div class="instructions">
@@ -621,7 +621,7 @@
                     createdAt: new Date().toISOString()
                 });
 
-                const nomorWhatsAppAdmin = 08001776565;
+                const nomorWhatsAppAdmin = "08001776565";
                 const formatRupiahText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(nominalTransaksi);
                 const pesanWhatsApp = encodeURIComponent(`Halo Admin, saya sudah melakukan pembayaran deposit sebesar ${formatRupiahText} (UID: ${currentUser.uid}). Mohon verifikasinya. Terima kasih.`);
 
