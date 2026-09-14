@@ -236,9 +236,27 @@
             font-size: clamp(0.88rem, 3.5vw, 1.15rem);
             color: var(--text-secondary);
             max-width: 640px;
-            margin: 0 auto 24px auto;
+            margin: 0 auto 16px auto;
             font-weight: 500;
             line-height: 1.5;
+        }
+
+        .hero-highlight {
+            background-color: var(--accent-brand-bg);
+            border: 1px dashed var(--accent-brand);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            max-width: 520px;
+            margin: 0 auto 24px auto;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .hero-highlight strong {
+            color: var(--accent-brand);
+            font-weight: 700;
         }
 
         .hero-cta {
@@ -317,7 +335,48 @@
         }
 
         /* ==========================================================================
-           5. FOOTER
+           5. LIVE NOTIFICATION TOAST
+           ========================================================================== */
+        .notification-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-brand);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            max-width: 320px;
+            transform: translateY(120px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .notification-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification-content h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .notification-content p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================================================
+           6. FOOTER
            ========================================================================== */
         footer {
             background-color: var(--bg-card);
@@ -355,15 +414,18 @@
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="status-badge">
-                <span class="status-dot"></span> Portal Terintegrasi Investasi Bengkulu 2026
+                <span class="status-dot"></span> Peluang Investasi Berpotensi Tinggi & Terverifikasi 2026
             </div>
-            <h1 class="hero-title">Platform Layanan Keuangan <span>Provinsi Bengkulu</span></h1>
+            <h1 class="hero-title">Raih Keuntungan Optimal Bersama <span>Peluang Investasi Bengkulu</span></h1>
             <p class="hero-subtitle">
-                Akses resmi informasi peluang investasi daerah, proyek komoditas unggulan, dan pemantauan portofolio yang terpercaya secara transparan.
+                Temukan proyek komoditas unggulan daerah berimbal hasil menarik, transparan, dan dikelola secara profesional untuk pertumbuhan aset masa depan Anda.
             </p>
+            <div class="hero-highlight">
+                💡 Mulai dari <strong>Rp10.000</strong> sudah bisa berpenghasilan sampai dengan <strong>Rp50.000 setiap hari</strong>
+            </div>
             <div id="heroCta" class="hero-cta">
                 <a href="login.html" class="btn btn-outline">Masuk Akun</a>
-                <a href="daftar.html" class="btn btn-brand">Daftar Akun Baru</a>
+                <a href="daftar.html" class="btn btn-brand">Mulai Berinvestasi Sekarang</a>
             </div>
         </section>
 
@@ -371,22 +433,31 @@
         <section class="features-grid">
             <div class="card">
                 <div class="feature-icon">01</div>
-                <h3 class="card-title">Kemitraan Daerah</h3>
-                <p class="card-desc">Terhubung langsung dengan sektor usaha unggulan seperti komoditas perkebunan, perikanan, dan UMKM potensial Bengkulu.</p>
+                <h3 class="card-title">Sektor Strategis Unggulan</h3>
+                <p class="card-desc">Akses langsung ke berbagai portofolio proyek bernilai tinggi di sektor perkebunan, perikanan, energi, dan pariwisata Bengkulu yang bertumbuh pesat.</p>
             </div>
             <div class="card">
                 <div class="feature-icon">02</div>
-                <h3 class="card-title">Transparansi Data</h3>
-                <p class="card-desc">Laporan analisis dan pemantauan proyek disajikan secara terperinci sesuai ketentuan akuntansi yang berlaku.</p>
+                <h3 class="card-title">Imbal Hasil & Transparansi</h3>
+                <p class="card-desc">Nikmati proyeksi profitabilitas kompetitif yang didukung oleh laporan analisis mendalam dan pemantauan kinerja secara real-time.</p>
             </div>
             <div class="card">
                 <div class="feature-icon">03</div>
-                <h3 class="card-title">Aman & Terpantau</h3>
-                <p class="card-desc">Sistem manajemen portofolio digital dilengkapi proteksi keamanan data dan audit berkala demi kenyamanan pemodal.</p>
+                <h3 class="card-title">Ekosistem Aman & Legal</h3>
+                <p class="card-desc">Sistem manajemen portofolio digital berstandar keamanan tinggi dengan audit berkala untuk memberikan ketenangan penuh bagi para pemodal.</p>
             </div>
         </section>
 
     </main>
+
+    <!-- Dummy Live Notification Toast Component -->
+    <div id="liveNotification" class="notification-toast">
+        <div class="feature-icon" style="width: 32px; height: 32px; font-size: 0.75rem; margin-bottom: 0;">Rp</div>
+        <div class="notification-content">
+            <h4 id="notifUser">ri***l@gmail.com</h4>
+            <p id="notifText">berhasil menarik Rp 15.000.000</p>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -451,11 +522,43 @@
                 if (heroCta) {
                     heroCta.innerHTML = `
                         <a href="login.html" class="btn btn-outline">Masuk Akun</a>
-                        <a href="daftar.html" class="btn btn-brand">Daftar Akun Baru</a>
+                        <a href="daftar.html" class="btn btn-brand">Mulai Berinvestasi Sekarang</a>
                     `;
                 }
             }
         });
+
+        // Dummy Notification Live Ticker Simulator
+        const dummyActivities = [
+            { user: "ri***l@gmail.com", action: "berhasil menarik Rp 150.000" },
+            { user: "de***a@gmail.com", action: "berhasil menarik Rp 200.000" },
+            { user: "an***i@gmail.com", action: "berhasil menarik Rp 450.000" },
+            { user: "pr***o@gmail.com", action: "berhasil berinvestasi Rp 1.200.000" },
+            { user: "ti***a@gmail.com", action: "berhasil menarik Rp 5.500.000" },
+            { user: "el***n@gmail.com", action: "berhasil berinvestasi Rp 750.000" }
+        ];
+
+        function triggerNotification() {
+            const toast = document.getElementById('liveNotification');
+            const userEl = document.getElementById('notifUser');
+            const textEl = document.getElementById('notifText');
+
+            const randomData = dummyActivities[Math.floor(Math.random() * dummyActivities.length)];
+            userEl.textContent = randomData.user;
+            textEl.textContent = randomData.action;
+
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4500);
+        }
+
+        // Jalankan notifikasi pertama setelah 3 detik halaman dimuat, lalu berulang setiap 12 detik
+        setTimeout(() => {
+            triggerNotification();
+            setInterval(triggerNotification, 12000);
+        }, 3000);
     </script>
 
 </body>
