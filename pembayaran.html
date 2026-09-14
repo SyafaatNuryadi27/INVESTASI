@@ -606,7 +606,7 @@
             const btnBayar = document.querySelector('button[onclick="konfirmasiSelesai()"]');
             if (btnBayar) {
                 btnBayar.disabled = true;
-                btnBayar.textContent = 'Menghubungkan ke WhatsApp...';
+                btnBayar.textContent = 'Menyimpan Transaksi...';
             }
 
             try {
@@ -621,11 +621,12 @@
                     createdAt: new Date().toISOString()
                 });
 
-                const nomorWhatsAppAdmin = "08001776565";
-                const formatRupiahText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(nominalTransaksi);
-                const pesanWhatsApp = encodeURIComponent(`Halo Admin, saya sudah melakukan pembayaran deposit sebesar ${formatRupiahText} (UID: ${currentUser.uid}). Mohon verifikasinya. Terima kasih.`);
-
-                window.location.href = `https://wa.me/${nomorWhatsAppAdmin}?text=${pesanWhatsApp}`;
+                showNotification(
+                    'Berhasil',
+                    'Konfirmasi pembayaran berhasil dikirim. Mohon tunggu verifikasi dari sistem.',
+                    false,
+                    () => { window.location.href = 'investasi.html'; }
+                );
 
             } catch (error) {
                 console.error("Gagal mengirim transaksi:", error);
