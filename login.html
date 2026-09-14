@@ -32,7 +32,7 @@
             --radius-full: 9999px;
             --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+            --shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
         }
 
         *, *::before, *::after {
@@ -70,6 +70,7 @@
             z-index: 100;
             box-shadow: var(--shadow-sm);
             width: 100%;
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .header-container {
@@ -103,6 +104,11 @@
             letter-spacing: 0.05em;
             border-left: 3px solid var(--accent-brand);
             flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .logo-box:hover .logo-icon {
+            transform: scale(1.05) rotate(-3deg);
         }
 
         .logo-text {
@@ -139,6 +145,9 @@
             box-shadow: var(--shadow-lg);
             width: 100%;
             max-width: 420px;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
         }
 
         .auth-title {
@@ -177,13 +186,48 @@
             font-size: 0.9rem;
             font-weight: 600;
             outline: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .form-input:focus {
             background-color: #ffffff;
             border-color: var(--accent-brand);
             box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-container .form-input {
+            padding-right: 44px;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--text-primary);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .password-toggle-btn svg {
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .btn {
@@ -197,13 +241,21 @@
             border: none;
             cursor: pointer;
             font-size: 0.9rem;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             letter-spacing: 0.01em;
             margin-top: 8px;
         }
 
-        .btn:active { transform: scale(0.98); }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        }
+
+        .btn:active { 
+            transform: translateY(0) scale(0.98); 
+            box-shadow: none;
+        }
 
         .btn-brand {
             background-color: var(--accent-brand);
@@ -217,6 +269,8 @@
         .btn-brand:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .auth-footer {
@@ -232,15 +286,49 @@
             color: var(--accent-brand);
             font-weight: 700;
             text-decoration: none;
+            transition: opacity 0.2s ease;
         }
 
         .auth-footer a:hover {
             text-decoration: underline;
+            opacity: 0.85;
         }
 
         /* ==========================================================================
-           4. CUSTOM NOTIFICATION MODAL
+           4. CUSTOM NOTIFICATION MODAL & ANIMATIONS
            ========================================================================== */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; backdrop-filter: blur(0px); }
+            to { opacity: 1; backdrop-filter: blur(4px); }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
         #custom-modal-overlay {
             display: none;
             position: fixed;
@@ -251,7 +339,7 @@
             justify-content: center;
             align-items: center;
             padding: 16px;
-            animation: fadeIn 0.2s ease-out forwards;
+            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .custom-modal-box {
@@ -263,8 +351,8 @@
             width: 100%;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             text-align: center;
-            transform: scale(0.95);
-            animation: scaleUp 0.2s ease-out forwards;
+            transform: scale(0.9);
+            animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         .custom-modal-icon {
@@ -280,12 +368,19 @@
             font-weight: 800;
             margin: 0 auto 14px auto;
             border: 2px solid rgba(5, 150, 105, 0.2);
+            animation: pulseIcon 2s infinite ease-in-out;
         }
 
         .custom-modal-icon.error {
             background-color: var(--accent-red-bg);
             color: var(--accent-red);
             border-color: rgba(220, 38, 38, 0.2);
+        }
+
+        @keyframes pulseIcon {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+            100% { transform: scale(1); }
         }
 
         .custom-modal-title {
@@ -304,16 +399,6 @@
             font-weight: 500;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleUp {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
         /* ==========================================================================
            5. FOOTER
            ========================================================================== */
@@ -326,6 +411,7 @@
             color: var(--text-secondary);
             margin-top: auto;
             width: 100%;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         footer p + p { margin-top: 6px; font-size: 0.68rem; color: var(--text-muted); }
@@ -356,7 +442,15 @@
 
                 <div class="form-group">
                     <label for="password">Kata Sandi</label>
-                    <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                    <div class="password-container">
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" id="togglePassword" class="password-toggle-btn" aria-label="Tampilkan atau sembunyikan kata sandi">
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-brand">Masuk Sekarang</button>
@@ -428,21 +522,59 @@
         }
 
         document.getElementById('custom-modal-btn').addEventListener('click', () => {
-            document.getElementById('custom-modal-overlay').style.display = 'none';
-            if (typeof modalCallback === 'function') {
-                modalCallback();
-                modalCallback = null;
-            }
+            const overlay = document.getElementById('custom-modal-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                overlay.style.opacity = '1';
+                if (typeof modalCallback === 'function') {
+                    modalCallback();
+                    modalCallback = null;
+                }
+            }, 200);
         });
 
         document.addEventListener('DOMContentLoaded', () => {
             const loginForm = document.getElementById('loginForm');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            // Fungsionalitas Toggle Show/Hide Password dengan Animasi Mikro Interaktif
+            togglePassword.addEventListener('click', () => {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                
+                // Efek animasi putar/skala kecil pada ikon saat diklik
+                eyeIcon.style.transform = 'scale(0.7) rotate(20deg)';
+                eyeIcon.style.opacity = '0.3';
+
+                setTimeout(() => {
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+
+                    if (isPassword) {
+                        // Ikon mata tercoret / sembunyikan password
+                        eyeIcon.innerHTML = `
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        `;
+                    } else {
+                        // Ikon mata normal / tampilkan password
+                        eyeIcon.innerHTML = `
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        `;
+                    }
+
+                    eyeIcon.style.transform = 'scale(1) rotate(0deg)';
+                    eyeIcon.style.opacity = '1';
+                }, 150);
+            });
 
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
+                const password = passwordInput.value;
                 const submitBtn = loginForm.querySelector('button[type="submit"]');
 
                 try {
