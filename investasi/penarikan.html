@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -62,6 +63,7 @@
             align-items: center;
             gap: 10px;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .logo-icon {
@@ -260,7 +262,7 @@
 
     <header>
         <div class="header-container">
-            <a href="investasi.html" class="logo-box">
+            <a id="logo-kembali" class="logo-box">
                 <div class="logo-icon">BI</div>
                 <div class="logo-text">Investasi<span>Bengkulu</span></div>
             </a>
@@ -314,8 +316,8 @@
 
                 <div class="btn-group">
                     <button type="submit" id="btn-submit" class="btn btn-red">Ajukan Penarikan</button>
-                    <a href="undang.html" id="btn-undang" class="btn btn-red" style="display: none; background-color: var(--accent-brand);">Undang Teman Sekarang</a>
-                    <a href="investasi.html" class="btn btn-outline">Batal / Kembali</a>
+                    <button type="button" id="btn-undang" class="btn btn-red" style="display: none; background-color: var(--accent-brand);">Undang Teman Sekarang</button>
+                    <button type="button" id="btn-kembali" class="btn btn-outline">Batal / Kembali</button>
                 </div>
             </form>
         </section>
@@ -346,9 +348,20 @@
         let currentUser = null;
         let nominalPenarikan = 0;
 
+        // Navigasi tombol kembali/logo menggunakan replace agar riwayat tidak menumpuk
+        document.getElementById('logo-kembali').addEventListener('click', () => {
+            window.location.replace('../investasi.html'); // Sesuaikan path jika direktori berbeda (misal: 'investasi.html')
+        });
+        document.getElementById('btn-kembali').addEventListener('click', () => {
+            window.location.replace('../investasi.html');
+        });
+        document.getElementById('btn-undang').addEventListener('click', () => {
+            window.location.replace('../undang.html'); // Sesuaikan path jika diperlukan
+        });
+
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.href = 'login.html';
+                window.location.replace('../login.html');
                 return;
             }
             currentUser = user;
@@ -400,7 +413,7 @@
                 e.preventDefault();
                 if (!currentUser) {
                     alert('Silakan masuk terlebih dahulu.');
-                    window.location.href = 'login.html';
+                    window.location.replace('../login.html');
                     return;
                 }
 
@@ -454,9 +467,9 @@
                         createdAt: new Date().toISOString()
                     });
 
-                    // Notifikasi sukses dan arahkan kembali ke halaman utama/investasi
+                    // Notifikasi sukses dan arahkan kembali menggunakan replace agar riwayat tidak bertumpuk
                     alert('Pengajuan penarikan berhasil! Saldo Anda sedang diproses oleh sistem.');
-                    window.location.href = 'investasi.html';
+                    window.location.replace('../investasi.html');
 
                 } catch (error) {
                     console.error("Gagal menyimpan transaksi ke Firestore:", error);
