@@ -717,18 +717,14 @@
             function updateTimer() {
                 const now = new Date();
                 let targetTime = new Date();
-                targetTime.setHours(19, 0, 0, 0); // Target jam 19:00 hari ini
+                targetTime.setHours(19, 0, 0, 0);
 
-                // Jika sudah melewati jam 19:00, targetkan ke jam 19:00 hari esok
                 if (now.getTime() >= targetTime.getTime()) {
                     targetTime.setDate(targetTime.getDate() + 1);
                 }
 
                 let distance = targetTime.getTime() - now.getTime();
-
-                if (distance < 0) {
-                    distance = 0;
-                }
+                if (distance < 0) distance = 0;
 
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -784,7 +780,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const state = {
                 modalUtama: 0,
-                totalProfitTerkumpul: 0,
+                baseProfit: 0,
+                lastUpdated: Date.now(),
                 rateHarian: 0.05,
                 detikDalamSehari: 86400,
                 minimalTransaksi: 10000,
@@ -839,7 +836,7 @@
             if (btnUndangTeman) {
                 btnUndangTeman.addEventListener('click', () => {
                     if (!currentUser) return;
-                    const referralLink = `https://bengkuluinvestasi.my.id/register.html?ref=${currentUser.uid}`;
+                    const referralLink = `https://bengkuluinvestasi.my.id/register/?ref=${currentUser.uid}`;
                     
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(referralLink).then(() => {
@@ -856,9 +853,18 @@
                 });
             }
 
+            const getTotalProfit = () => {
+                if (state.modalUtama <= 0) return state.baseProfit;
+                const now = Date.now();
+                const elapsedSeconds = Math.max(0, (now - state.lastUpdated) / 1000);
+                const profitPerHari = state.modalUtama * state.rateHarian;
+                const profitPerDetik = profitPerHari / state.detikDalamSehari;
+                return state.baseProfit + (profitPerDetik * elapsedSeconds);
+            };
+
             onAuthStateChanged(auth, async (user) => {
                 if (!user) {
-                    window.location.href = 'login.html';
+                    window.location.href = 'login/';
                     return;
                 }
                 currentUser = user;
@@ -870,16 +876,11 @@
                 onSnapshot(doc(db, "portfolios", user.uid), (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        const oldModal = state.modalUtama;
                         state.modalUtama = data.modalUtama || 0;
-                        state.totalProfitTerkumpul = data.totalProfitTerkumpul || 0;
+                        state.baseProfit = data.totalProfitTerkumpul || 0;
+                        state.lastUpdated = data.lastUpdated || Date.now();
                         if (data.rateHarian !== undefined) state.rateHarian = data.rateHarian;
-                        
-                        if (state.modalUtama > oldModal) {
-                            state.lastDepositTime = data.lastDepositTime || Date.now();
-                        } else if (data.lastDepositTime) {
-                            state.lastDepositTime = data.lastDepositTime;
-                        }
+                        state.lastDepositTime = data.lastDepositTime || 0;
 
                         updateUIStat();
                     }
@@ -905,7 +906,7 @@
                 });
 
                 if (!profitInterval) {
-                    profitInterval = setInterval(hitungProfitBerjalan, 1000);
+                    profitInterval = setInterval(updateUIStat, 1000);
                 }
 
                 if (!saveInterval) {
@@ -921,7 +922,7 @@
                         await simpanDataPortfolio(currentUser.uid);
                     }
                     await signOut(auth);
-                    window.location.href = 'login.html';
+                    window.location.href = 'login/';
                 } catch (error) {
                     console.error('Gagal keluar:', error);
                 }
@@ -942,37 +943,16 @@
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         state.modalUtama = data.modalUtama || 0;
-                        let storedProfit = data.totalProfitTerkumpul || 0;
+                        state.baseProfit = data.totalProfitTerkumpul || 0;
+                        state.lastUpdated = data.lastUpdated || now;
                         if (data.rateHarian !== undefined) state.rateHarian = data.rateHarian;
                         state.lastDepositTime = data.lastDepositTime || 0;
-
-                        let lastUpdated = data.lastUpdated;
-                        if (typeof lastUpdated !== 'number') {
-                            lastUpdated = now;
-                        }
-                        const elapsedSeconds = Math.max(0, Math.floor((now - lastUpdated) / 1000));
-
-                        if (state.modalUtama > 0 && elapsedSeconds > 0) {
-                            const profitPerHari = state.modalUtama * state.rateHarian;
-                            const profitPerDetik = profitPerHari / state.detikDalamSehari;
-                            storedProfit += profitPerDetik * elapsedSeconds;
-                        }
-
-                        state.totalProfitTerkumpul = storedProfit;
-
-                        if (state.modalUtama > 0 && !state.lastDepositTime) {
-                            state.lastDepositTime = lastUpdated;
-                        }
-
-                        await setDoc(docRef, {
-                            modalUtama: state.modalUtama,
-                            totalProfitTerkumpul: state.totalProfitTerkumpul,
-                            rateHarian: state.rateHarian,
-                            lastDepositTime: state.lastDepositTime,
-                            lastUpdated: now
-                        }, { merge: true });
-
                     } else {
+                        state.modalUtama = 0;
+                        state.baseProfit = 0;
+                        state.lastUpdated = now;
+                        state.rateHarian = 0.05;
+                        state.lastDepositTime = 0;
                         await setDoc(docRef, { 
                             modalUtama: 0, 
                             totalProfitTerkumpul: 0, 
@@ -990,14 +970,19 @@
             async function simpanDataPortfolio(uid) {
                 if (!uid) return;
                 try {
+                    const currentTotalProfit = getTotalProfit();
+                    const now = Date.now();
                     const docRef = doc(db, "portfolios", uid);
                     await setDoc(docRef, {
                         modalUtama: state.modalUtama,
-                        totalProfitTerkumpul: state.totalProfitTerkumpul,
+                        totalProfitTerkumpul: currentTotalProfit,
                         rateHarian: state.rateHarian,
                         lastDepositTime: state.lastDepositTime,
-                        lastUpdated: Date.now()
+                        lastUpdated: now
                     }, { merge: true });
+                    
+                    state.baseProfit = currentTotalProfit;
+                    state.lastUpdated = now;
                 } catch (error) {
                     console.error("Gagal menyimpan portfolio:", error);
                 }
@@ -1058,20 +1043,8 @@
                 dom.tabelRiwayat.insertAdjacentHTML('beforeend', rowHtml);
             }
 
-            const hitungProfitBerjalan = () => {
-                if (state.modalUtama <= 0) {
-                    updateUIStat();
-                    return;
-                }
-
-                const profitPerHari = state.modalUtama * state.rateHarian;
-                const profitPerDetik = profitPerHari / state.detikDalamSehari;
-
-                state.totalProfitTerkumpul += profitPerDetik;
-                updateUIStat();
-            };
-
             const updateUIStat = () => {
+                const totalProfitTerkumpul = getTotalProfit();
                 const profitPerHari = state.modalUtama * state.rateHarian;
                 const profitPerDetik = profitPerHari / state.detikDalamSehari;
                 const profitPerJam = profitPerHari / 24;
@@ -1079,8 +1052,8 @@
                 dom.displayProfitDetik.textContent = `+${formatRupiah(profitPerDetik, 4)}`;
                 dom.displayProfitJam.textContent = formatRupiah(profitPerJam, 2);
                 dom.displayProfitHari.textContent = formatRupiah(profitPerHari, 0);
-                dom.displayTotalProfit.textContent = formatRupiah(state.totalProfitTerkumpul, 2);
-                dom.displaySaldoTotal.textContent = formatRupiah(state.modalUtama + state.totalProfitTerkumpul, 2);
+                dom.displayTotalProfit.textContent = formatRupiah(totalProfitTerkumpul, 2);
+                dom.displaySaldoTotal.textContent = formatRupiah(state.modalUtama + totalProfitTerkumpul, 2);
                 dom.displayModal.textContent = formatRupiah(state.modalUtama, 0);
             };
 
@@ -1106,7 +1079,7 @@
                 if (!currentUser) return;
 
                 const inputVal = parseFloat(dom.inputWithdraw.value.replace(/\./g, '')) || 0;
-                const totalTersedia = state.modalUtama + state.totalProfitTerkumpul;
+                const totalTersedia = state.modalUtama + getTotalProfit();
 
                 if (inputVal > totalTersedia) {
                     showNotification(
