@@ -794,7 +794,8 @@
 
             onAuthStateChanged(auth, async (user) => {
                 if (!user) {
-                    window.location.href = 'login/';
+                    // Menggunakan replace agar riwayat login tidak menumpuk
+                    window.location.replace('login/');
                     return;
                 }
                 currentUser = user;
@@ -852,7 +853,8 @@
                         await simpanDataPortfolio(currentUser.uid);
                     }
                     await signOut(auth);
-                    window.location.href = 'login/';
+                    // Menggunakan replace saat keluar ke halaman login
+                    window.location.replace('login/');
                 } catch (error) {
                     console.error('Gagal keluar:', error);
                 }
@@ -995,7 +997,8 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    window.location.href = `pembayaran.html?nominal=${inputVal}`;
+                    // Menggunakan window.location.replace agar riwayat halaman tidak menumpuk
+                    window.location.replace(`pembayaran.html?nominal=${inputVal}`);
                 } else {
                     showNotification(
                         'Batas Minimum Deposit',
@@ -1036,7 +1039,8 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    window.location.href = `penarikan.html?nominal=${inputVal}`;
+                    // Menggunakan window.location.replace agar riwayat halaman tidak menumpuk
+                    window.location.replace(`penarikan.html?nominal=${inputVal}`);
                 } else {
                     showNotification(
                         'Batas Minimum Penarikan',
