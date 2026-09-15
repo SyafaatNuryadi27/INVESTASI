@@ -350,18 +350,18 @@
 
         // Navigasi tombol kembali/logo menggunakan replace agar riwayat tidak menumpuk
         document.getElementById('logo-kembali').addEventListener('click', () => {
-            window.location.replace('../investasi.html'); // Sesuaikan path jika direktori berbeda (misal: 'investasi.html')
+            window.location.replace('../investasi/'); // Sesuaikan path jika direktori berbeda (misal: 'investasi.html')
         });
         document.getElementById('btn-kembali').addEventListener('click', () => {
-            window.location.replace('../investasi.html');
+            window.location.replace('../investasi/');
         });
         document.getElementById('btn-undang').addEventListener('click', () => {
-            window.location.replace('../undang.html'); // Sesuaikan path jika diperlukan
+            window.location.replace('../undang/'); // Sesuaikan path jika diperlukan
         });
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.replace('../login.html');
+                window.location.replace('../login/');
                 return;
             }
             currentUser = user;
@@ -413,7 +413,7 @@
                 e.preventDefault();
                 if (!currentUser) {
                     alert('Silakan masuk terlebih dahulu.');
-                    window.location.replace('../login.html');
+                    window.location.replace('../login/');
                     return;
                 }
 
@@ -469,7 +469,7 @@
 
                     // Notifikasi sukses dan arahkan kembali menggunakan replace agar riwayat tidak bertumpuk
                     alert('Pengajuan penarikan berhasil! Saldo Anda sedang diproses oleh sistem.');
-                    window.location.replace('../investasi.html');
+                    window.location.replace('../investasi/');
 
                 } catch (error) {
                     console.error("Gagal menyimpan transaksi ke Firestore:", error);
