@@ -1065,7 +1065,7 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    window.location.href = `pembayaran/?nominal=${inputVal}`;
+                    window.location.href = `https://investasibengkulu.my.id/pembayaran/?nominal=${inputVal}`;
                 } else {
                     showNotification(
                         'Batas Minimum Deposit',
