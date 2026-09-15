@@ -353,7 +353,6 @@
             }
             currentUser = user;
             
-            // Periksa statusUndangTeman dari Firestore dokumen portfolios pengguna
             const alertBox = document.getElementById('alert-referral');
             const submitBtn = document.getElementById('btn-submit');
             const undangBtn = document.getElementById('btn-undang');
@@ -437,7 +436,7 @@
                 }
 
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Menyimpan & Mengarahkan ke WhatsApp...';
+                submitBtn.textContent = 'Menyimpan Pengajuan...';
 
                 const waktuSekarang = new Date().toLocaleString('id-ID', {
                     day: '2-digit', month: '2-digit', year: 'numeric',
@@ -454,25 +453,17 @@
                         status: 'Pending',
                         createdAt: new Date().toISOString()
                     });
+
+                    // Notifikasi sukses dan arahkan kembali ke halaman utama/investasi
+                    alert('Pengajuan penarikan berhasil! Saldo Anda sedang diproses oleh sistem.');
+                    window.location.href = 'investasi.html';
+
                 } catch (error) {
                     console.error("Gagal menyimpan transaksi ke Firestore:", error);
+                    alert('Terjadi kesalahan saat memproses penarikan. Silakan coba lagi.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Ajukan Penarikan';
                 }
-
-                const adminWhatsAppNumber = "6281234567890"; 
-
-                const pesan = `Halo Admin, saya ingin mengajukan penarikan saldo:\n\n` +
-                              `*User ID:* ${currentUser.uid}\n` +
-                              `*Email:* ${currentUser.email || 'Tidak ada'}\n` +
-                              `*Total Nominal:* ${formatRupiah(nominalPenarikan)}\n` +
-                              `*Bank / E-Wallet:* ${bankTujuan}\n` +
-                              `*No. Rekening / Tujuan:* ${noRekening}\n` +
-                              `*Nama Pemilik:* ${namaPemilik}\n\n` +
-                              `Mohon diproses, terima kasih.`;
-
-                const encodedMessage = encodeURIComponent(pesan);
-                const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodedMessage}`;
-
-                window.location.href = whatsappUrl;
             });
         });
     </script>
