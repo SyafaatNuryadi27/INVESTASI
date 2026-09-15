@@ -995,7 +995,7 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    window.location.href = `pembayaran/?nominal=${inputVal}`;
+                    window.location.href = `pembayaran.html?nominal=${inputVal}`;
                 } else {
                     showNotification(
                         'Batas Minimum Deposit',
@@ -1036,7 +1036,7 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    window.location.href = `penarikan/?nominal=${inputVal}`;
+                    window.location.href = `penarikan.html?nominal=${inputVal}`;
                 } else {
                     showNotification(
                         'Batas Minimum Penarikan',
