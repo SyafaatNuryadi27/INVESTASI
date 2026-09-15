@@ -717,7 +717,7 @@
             function updateTimer() {
                 const now = new Date();
                 let targetTime = new Date();
-                targetTime.setHours(19, 0, 0, 0); // Target jam 19:00 hari ini
+                targetTime.setHours(19, 0, 0, 0);
 
                 if (now.getTime() >= targetTime.getTime()) {
                     targetTime.setDate(targetTime.getDate() + 1);
@@ -857,7 +857,6 @@
 
             onAuthStateChanged(auth, async (user) => {
                 if (!user) {
-                    // Menggunakan replace agar riwayat login tidak menumpuk
                     window.location.replace('login.html');
                     return;
                 }
@@ -921,7 +920,6 @@
                         await simpanDataPortfolio(currentUser.uid);
                     }
                     await signOut(auth);
-                    // Menggunakan replace saat keluar
                     window.location.replace('login.html');
                 } catch (error) {
                     console.error('Gagal keluar:', error);
@@ -1093,7 +1091,6 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    // Menggunakan window.location.replace agar riwayat tidak menumpuk
                     window.location.replace(`pembayaran/?nominal=${inputVal}`);
                 } else {
                     showNotification(
@@ -1135,7 +1132,6 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    // Menggunakan window.location.replace agar riwayat tidak menumpuk
                     window.location.replace(`penarikan/?nominal=${inputVal}`);
                 } else {
                     showNotification(
