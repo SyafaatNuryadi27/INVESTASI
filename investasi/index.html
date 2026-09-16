@@ -578,6 +578,17 @@
 
     <main>
         <div class="dashboard-main">
+            <!-- Banner Promo Spesial 3x Lipat -->
+            <section class="card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #10b981;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="background-color: #059669; color: #ffffff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);">3X</div>
+                    <div>
+                        <h3 class="card-title" style="color: #065f46; font-size: 1.05rem;">Promo Spesial Deposit Rp 100.000</h3>
+                        <p style="font-size: 0.82rem; color: #047857; font-weight: 600; margin-top: 2px;">Lakukan setoran deposit sebesar Rp 100.000 dan dapatkan penawaran khusus saldo portofolio berkembang hingga 3x lipat!</p>
+                    </div>
+                </div>
+            </section>
+
             <section class="card banner">
                 <p class="subtitle">Estimasi Total Saldo Portfolio</p>
                 <div id="display-saldo-total" class="saldo-utama" aria-live="polite">
@@ -674,7 +685,7 @@
 
     <footer>
         <p>&copy; 2026 bengkuluinvestasi.my.id &bull; Platform Investasi Bengkulu</p>
-        <p>Sistem Simulasi Transaksi Real-Time berbasis Web.</p>
+        <p>Platform Transaksi Investasi berbasis Web.</p>
     </footer>
 
     <script type="module">
@@ -794,12 +805,17 @@
 
             onAuthStateChanged(auth, async (user) => {
                 if (!user) {
-                    // Menggunakan replace agar riwayat login tidak menumpuk
                     window.location.replace('login/');
                     return;
                 }
                 currentUser = user;
                 dom.userEmailDisplay.textContent = user.email;
+
+                // Memunculkan pop-up pemberitahuan promo 3x lipat secara otomatis
+                showNotification(
+                    'Promo Spesial gandakan hingga 3x Lipat!',
+                    'Kabar gembira! Khusus untuk deposit sebesar Rp 100.000, Kami akan memberikan penawaran khusus saldo bertambah menjadi 3x lipat. Manfaatkan kesempatan ini sekarang!'
+                );
 
                 await muatDataPortfolio(user.uid);
                 await muatRiwayat(user.uid);
@@ -853,7 +869,6 @@
                         await simpanDataPortfolio(currentUser.uid);
                     }
                     await signOut(auth);
-                    // Menggunakan replace saat keluar ke halaman login
                     window.location.replace('login/');
                 } catch (error) {
                     console.error('Gagal keluar:', error);
@@ -997,7 +1012,6 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    // Menggunakan window.location.replace agar riwayat halaman tidak menumpuk
                     window.location.replace(`pembayaran.html?nominal=${inputVal}`);
                 } else {
                     showNotification(
@@ -1031,7 +1045,7 @@
                         const sisaJam = Math.ceil((waktu24Jam - selisihWaktu) / (1000 * 60 * 60));
                         showNotification(
                             'Ketentuan Layanan',
-                            `Pengajuan penarikan belum dapat diproses. Berdasarkan kebijakan keamanan sistem, pencairan dana baru dapat dilakukan 24 jam setelah transaksi deposit terakhir. Estimasi waktu tunggu tersisa: ± ${sisaJam} jam.`
+                            `Pengajuan penarikan belum dapat diproses. Berdasarkan kebijakan keamanan kami, pencairan dana baru dapat dilakukan 30 hari setelah transaksi deposit terakhir. Estimasi waktu tunggu tersisa: ± ${sisaJam} jam.`
                         );
                         return;
                     }
@@ -1039,7 +1053,6 @@
 
                 if (inputVal && inputVal >= state.minimalTransaksi) {
                     await simpanDataPortfolio(currentUser.uid);
-                    // Menggunakan window.location.replace agar riwayat halaman tidak menumpuk
                     window.location.replace(`penarikan.html?nominal=${inputVal}`);
                 } else {
                     showNotification(
