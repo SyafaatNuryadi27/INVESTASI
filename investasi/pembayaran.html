@@ -409,7 +409,7 @@
             <div id="display-nominal-transfer" class="nominal-val">Rp 0</div>
 
             <div class="qris-wrapper">
-                <img src="QR.jpeg" alt="Kode QRIS Pembayaran" class="qris-img" id="qris-image">
+                <img src="/QR.jpeg" alt="Kode QRIS Pembayaran" class="qris-img" id="qris-image">
             </div>
 
             <div class="instructions">
@@ -425,7 +425,8 @@
 
             <div class="btn-group">
                 <button onclick="konfirmasiSelesai()" class="btn btn-brand">Saya Sudah Bayar</button>
-                <a href="investasi.html" class="btn btn-outline">Batal / Kembali</a>
+                <!-- PERBAIKAN: Ditambahkan '/' di awal href -->
+                <a href="/investasi.html" class="btn btn-outline">Batal / Kembali</a>
             </div>
         </section>
     </main>
@@ -525,7 +526,8 @@
 
         onAuthStateChanged(auth, (user) => {
             if (!user) {
-                window.location.href = 'login.html';
+                // PERBAIKAN: Ditambahkan '/' di awal path
+                window.location.href = '/login.html';
                 return;
             }
             currentUser = user;
@@ -560,7 +562,8 @@
                         'Waktu Habis',
                         'Waktu pembayaran telah habis. Silakan ulangi transaksi deposit Anda.',
                         true,
-                        () => { window.location.href = 'investasi.html'; }
+                        // PERBAIKAN: Ditambahkan '/' di awal path
+                        () => { window.location.href = '/investasi.html'; }
                     );
                 }
                 waktuDetik--;
@@ -593,7 +596,8 @@
                     'Autentikasi Diperlukan',
                     'Silakan masuk terlebih dahulu.',
                     true,
-                    () => { window.location.href = 'login.html'; }
+                    // PERBAIKAN: Ditambahkan '/' di awal path
+                    () => { window.location.href = '/login.html'; }
                 );
                 return;
             }
@@ -625,7 +629,8 @@
                     'Berhasil',
                     'Konfirmasi pembayaran berhasil dikirim. Mohon tunggu verifikasi dari sistem.',
                     false,
-                    () => { window.location.href = 'investasi.html'; }
+                    // PERBAIKAN: Ditambahkan '/' di awal path
+                    () => { window.location.href = '/investasi.html'; }
                 );
 
             } catch (error) {
