@@ -525,7 +525,7 @@
 
         onAuthStateChanged(auth, (user) => {
             if (!user) {
-                window.location.href = 'login.html';
+                window.location.replace = 'login/';
                 return;
             }
             currentUser = user;
@@ -560,7 +560,7 @@
                         'Waktu Habis',
                         'Waktu pembayaran telah habis. Silakan ulangi transaksi deposit Anda.',
                         true,
-                        () => { window.location.href = 'investasi.html'; }
+                        () => { window.location.replace = 'investasi/'; }
                     );
                 }
                 waktuDetik--;
@@ -593,7 +593,7 @@
                     'Autentikasi Diperlukan',
                     'Silakan masuk terlebih dahulu.',
                     true,
-                    () => { window.location.href = 'login.html'; }
+                    () => { window.location.replace = 'login/'; }
                 );
                 return;
             }
