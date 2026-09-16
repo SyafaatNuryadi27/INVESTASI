@@ -425,7 +425,7 @@
 
             <div class="btn-group">
                 <button onclick="konfirmasiSelesai()" class="btn btn-brand">Saya Sudah Bayar</button>
-                <a href="investasi/" class="btn btn-outline">Batal / Kembali</a>
+                <a href="investasi.html" class="btn btn-outline">Batal / Kembali</a>
             </div>
         </section>
     </main>
@@ -525,7 +525,7 @@
 
         onAuthStateChanged(auth, (user) => {
             if (!user) {
-                window.location.href = 'login/';
+                window.location.href = 'login.html';
                 return;
             }
             currentUser = user;
@@ -560,7 +560,7 @@
                         'Waktu Habis',
                         'Waktu pembayaran telah habis. Silakan ulangi transaksi deposit Anda.',
                         true,
-                        () => { window.location.href = 'investasi/'; }
+                        () => { window.location.href = 'investasi.html'; }
                     );
                 }
                 waktuDetik--;
@@ -593,7 +593,7 @@
                     'Autentikasi Diperlukan',
                     'Silakan masuk terlebih dahulu.',
                     true,
-                    () => { window.location.href = 'login/'; }
+                    () => { window.location.href = 'login.html'; }
                 );
                 return;
             }
@@ -625,7 +625,7 @@
                     'Berhasil',
                     'Konfirmasi pembayaran berhasil dikirim. Mohon tunggu verifikasi dari sistem.',
                     false,
-                    () => { window.location.href = 'investasi/'; }
+                    () => { window.location.href = 'investasi.html'; }
                 );
 
             } catch (error) {
