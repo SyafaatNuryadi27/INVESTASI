@@ -560,7 +560,7 @@
                         'Waktu Habis',
                         'Waktu pembayaran telah habis. Silakan ulangi transaksi deposit Anda.',
                         true,
-                        () => { window.location.replace = 'investasi/'; }
+                        () => { window.location.href = 'https://investasibengkulu.my.id/investasi'; }
                     );
                 }
                 waktuDetik--;
@@ -593,7 +593,7 @@
                     'Autentikasi Diperlukan',
                     'Silakan masuk terlebih dahulu.',
                     true,
-                    () => { window.location.replace = 'login/'; }
+                    () => { window.location.href = 'https://investasibengkulu.my.id/login'; }
                 );
                 return;
             }
@@ -625,7 +625,7 @@
                     'Berhasil',
                     'Konfirmasi pembayaran berhasil dikirim. Mohon tunggu verifikasi dari sistem.',
                     false,
-                    () => { window.location.href = 'investasi.html'; }
+                    () => { window.location.href = 'https://investasibengkulu.my.id/investasi'; }
                 );
 
             } catch (error) {
