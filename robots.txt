@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /daftar/
+Disallow: /login/
+Disallow: /investasi/
+Disallow: /pembayaran/
+Disallow: /penarikan/
+
+Sitemap: https://investasibengkulu.my.id/sitemap.xml
